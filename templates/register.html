@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hospital Registration</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: "Poppins", sans-serif;
+      background: linear-gradient(90deg, #6a11cb 0%, #2575fc 100%);
+      display: flex;
+      height: 100vh;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .container {
+      background: white;
+      width: 900px;
+      height: 550px;
+      border-radius: 15px;
+      display: flex;
+      overflow: hidden;
+      box-shadow: 0px 10px 25px rgba(0,0,0,0.2);
+    }
+
+    /* Left panel */
+    .left {
+      flex: 1;
+      background: linear-gradient(135deg, #6a11cb, #2575fc);
+      color: white;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 40px;
+    }
+
+    .left h1 {
+      font-size: 28px;
+      margin-top: 20px;
+    }
+
+    .left img {
+      width: 80px;
+    }
+
+    /* Right panel */
+    .right {
+      flex: 2;
+      padding: 40px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .role-switch {
+      display: flex;
+      justify-content: flex-end;
+      margin-bottom: 20px;
+    }
+
+    .role-switch button {
+      border: none;
+      outline: none;
+      background: #eee;
+      color: #333;
+      padding: 8px 15px;
+      margin-left: 5px;
+      border-radius: 20px;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    .role-switch button.active {
+      background: #6a11cb;
+      color: white;
+    }
+
+    h2 {
+      margin-bottom: 20px;
+      color: #333;
+    }
+
+    .form-row {
+      display: flex;
+      gap: 15px;
+      margin-bottom: 15px;
+    }
+
+    .form-row input {
+      flex: 1;
+      padding: 12px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      font-size: 14px;
+      outline: none;
+      transition: border 0.3s;
+    }
+
+    .form-row input:focus {
+      border: 1px solid #6a11cb;
+    }
+
+    .gender {
+      margin-bottom: 15px;
+    }
+
+    .gender label {
+      margin-right: 20px;
+      font-size: 14px;
+      color: #555;
+    }
+
+    .submit-btn {
+      background: #6a11cb;
+      border: none;
+      color: white;
+      padding: 12px 25px;
+      border-radius: 25px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    .submit-btn:hover {
+      background: #2575fc;
+    }
+
+    .login-link {
+      margin-top: 10px;
+      font-size: 14px;
+    }
+
+    .login-link a {
+      color: #6a11cb;
+      text-decoration: none;
+    }
+
+    .login-link a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Left Section -->
+    <div class="left">
+      <img src="https://cdn-icons-png.flaticon.com/512/846/846449.png" alt="Icon">
+      <h1>Welcome</h1>
+    </div>
+
+    <!-- Right Section -->
+    <div class="right">
+      <div class="role-switch">
+        <button type="button" class="role-btn active" data-role="patient">Patient</button>
+        <button type="button" class="role-btn" data-role="doctor">Doctor</button>
+        <button type="button" class="role-btn" data-role="admin">Admin</button>
+      </div>
+      <h2 id="register-title">Register as Patient</h2>
+      {% if error %}
+        <div style="color: red; margin-bottom: 10px;">{{ error }}</div>
+      {% endif %}
+      <form method="POST" id="register-form">
+        <input type="hidden" name="role" id="role-input" value="patient">
+        <div class="form-row">
+          <input type="text" name="username" placeholder="Username *" required>
+          <input type="text" name="fullname" placeholder="Full Name *" required>
+        </div>
+        <div class="form-row">
+          <input type="email" name="email" placeholder="Your Email *" required>
+          <input type="text" name="phone" placeholder="Your Phone *" required>
+        </div>
+        <div class="form-row">
+          <input type="password" name="password" placeholder="Password *" required>
+          <input type="password" name="confirm_password" placeholder="Confirm Password *" required>
+        </div>
+
+        <div class="gender">
+          <label><input type="radio" name="gender" value="male"> Male</label>
+          <label><input type="radio" name="gender" value="female"> Female</label>
+        </div>
+
+  <button type="submit" class="submit-btn">Register</button>
+        <div class="login-link">
+          Already have an account? <a href="{{ url_for('login') }}">Login</a>
+        </div>
+      </form>
+    </div>
+  </div>
+  <script>
+    const roleBtns = document.querySelectorAll('.role-btn');
+    const roleInput = document.getElementById('role-input');
+    const registerTitle = document.getElementById('register-title');
+    roleBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        roleBtns.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        roleInput.value = btn.dataset.role;
+        registerTitle.textContent = `Register as ${btn.textContent}`;
+      });
+    });
+  </script>
+</body>
+</html>

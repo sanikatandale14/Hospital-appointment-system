@@ -1,0 +1,182 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Doctor Dashboard</title>
+    <link rel="stylesheet" href="/static/style.css" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="dashboard">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="profile">
+                <img src="https://via.placeholder.com/100" alt="Doctor" />
+                <h3>{% if current_user.is_authenticated %}{{ current_user.username }}{% else %}Dr. Marttin Deo{% endif %}</h3>
+                <p>MBBS, FCPS, MD</p>
+            </div>
+            <nav>
+                <a href="#" class="active">🏠 Dashboard</a>
+                <a href="/appointments">📅 Appointment</a>
+                <a href="/appointment">📝 Appointment Page</a>
+                <a href="#">💳 Payment</a>
+                <a href="/profile">👤 Profile</a>
+                <a href="#">⚙️ Settings</a>
+                <a href="/logout">🚪 Logout</a>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main">
+            <!-- Top bar -->
+            <header class="topbar">
+                <h2>Dashboard</h2>
+                <div class="search-box">
+                    <input type="text" placeholder="Search..." />
+                </div>
+                <div class="icons">
+                    <span>🔔</span>
+                    <span>✉️</span>
+                </div>
+            </header>
+
+            <!-- Stats Cards -->
+            <section class="cards">
+                <div class="card">
+                    <h3>Total Patient</h3>
+                    <p>{{ total_patients if total_patients else 'No data' }}</p>
+                    <small>Till Today</small>
+                </div>
+                <div class="card">
+                    <h3>Today Patient</h3>
+                    <p>{{ today_patients if today_patients else 'No data' }}</p>
+                    <small>{{ today_date if today_date else '' }}</small>
+                </div>
+                <div class="card">
+                    <h3>Today Appointments</h3>
+                    <p>{{ today_appointments if today_appointments else 'No data' }}</p>
+                    <small>{{ today_date if today_date else '' }}</small>
+                </div>
+            </section>
+
+            <!-- Content Row -->
+            <section class="content-row">
+                <div class="chart-box">
+                    <h3>Patients Summary</h3>
+                    {% if role == 'doctor' %}
+                    <canvas id="patientsChart"></canvas>
+                    {% else %}
+                    <p>Login as a doctor to view patient summary chart.</p>
+                    {% endif %}
+                </div>
+
+                <div class="appointments">
+                    <h3>Today Appointments</h3>
+                    <ul>
+                        {% if today_appointments_list %}
+                            {% for appt in today_appointments_list %}
+                            <li><b>{{ appt.patient_name }}</b> – {{ appt.reason }} <span class="status">{{ appt.status }}</span></li>
+                            {% endfor %}
+                        {% else %}
+                            <li>No appointments today.</li>
+                        {% endif %}
+                    </ul>
+                </div>
+
+                <div class="next-patient">
+                    <h3>Next Patient Details</h3>
+                    {% if next_patient %}
+                    <div class="patient-card">
+                        <img src="https://via.placeholder.com/80" alt="Patient" />
+                        <p><b>{{ next_patient.patient_name }}</b> – {{ next_patient.reason }}</p>
+                        <p>Patient ID: {{ next_patient.patient_id }}</p>
+                        <p>DOB: {{ next_patient.dob }}</p>
+                        <p>Sex: {{ next_patient.sex }} | Weight: {{ next_patient.weight }}kg</p>
+                        <p>Height: {{ next_patient.height }} cm</p>
+                        <div class="tags">
+                            {% for tag in next_patient.tags %}
+                            <span class="tag{% if tag == 'Fever' %} fever{% endif %}">{{ tag }}</span>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    {% else %}
+                    <p>No upcoming patient.</p>
+                    {% endif %}
+                </div>
+
+                <!-- All Doctors List -->
+                <div class="appointments">
+                    <h3>All Doctors</h3>
+                    <ul>
+                        {% if doctors %}
+                            {% for doc in doctors %}
+                            <li><b>{{ doc.username }}</b> (ID: {{ doc.id }})</li>
+                            {% endfor %}
+                        {% else %}
+                            <li>No doctors registered.</li>
+                        {% endif %}
+                    </ul>
+                </div>
+
+                <!-- All Patients List -->
+                <div class="appointments">
+                    <h3>All Patients</h3>
+                    <ul>
+                        {% if patients %}
+                            {% for pat in patients %}
+                            <li><b>{{ pat.username }}</b> (ID: {{ pat.id }})</li>
+                            {% endfor %}
+                        {% else %}
+                            <li>No patients registered.</li>
+                        {% endif %}
+                    </ul>
+                </div>
+
+                <!-- Recent Registrations -->
+                <div class="appointments">
+                    <h3>Recent Registrations</h3>
+                    <ul>
+                        {% if recent_registrations %}
+                            {% for user in recent_registrations %}
+                            <li><b>{{ user.username }}</b> (Role: {{ user.role }}, ID: {{ user.id }})</li>
+                            {% endfor %}
+                        {% else %}
+                            <li>No recent registrations.</li>
+                        {% endif %}
+                    </ul>
+                </div>
+            </section>
+        </main>
+    </div>
+    <script src="/static/script.js"></script>
+    {% if role == 'doctor' %}
+    <script>
+        // Chart.js Pie Chart
+        // const ctx = document.getElementById("patientsChart").getContext("2d");
+        // new Chart(ctx, {
+        //     type: "doughnut",
+        //     data: {
+        //         labels: ["New Patients", "Old Patients", "Total Patients"],
+        //         datasets: [
+        //             {
+        //                 data: {{ [new_patients, old_patients, total_patients]|tojson }}
+        //                 backgroundColor: ["#a6c8ff", "#ffc04d", "#005dff"]
+        //                 borderWidth: 1,
+        //             },
+        //         ],
+        //     },
+        //     options: {
+        //         responsive: true,
+        //         plugins: {
+        //             legend: {
+        //                 position: "bottom",
+        //             },
+        //         },
+        //     },
+        // });
+    </script>
+    {% endif %}
+</body>
+</html>
